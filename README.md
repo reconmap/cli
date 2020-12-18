@@ -1,3 +1,5 @@
+![Build and test workflow](https://github.com/Reconmap/cli/workflows/Build%20and%20test%20workflow/badge.svg)
+
 # Reconmap CLI
 
 Command line interface for the Reconmap pentest automation and reporting tool.
