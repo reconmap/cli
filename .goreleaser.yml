@@ -17,7 +17,8 @@ builds:
       - windows
       - darwin
     binary: rmap
-    dir: ./cmd/rmap
+    id: "reconmap-cli"
+    main: ./cmd/rmap/main.go
 
 archives:
   - replacements:
