@@ -28,6 +28,15 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "list Reconmap containers",
+				Action: func(c *cli.Context) error {
+					commands.ListContainer()
+					return nil
+				},
+			},
 		},
 	}
 
