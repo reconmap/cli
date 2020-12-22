@@ -1,26 +1,38 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
 
-	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/commands"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	const usage = `Reconmap pentest automation tool.
 
-Usage: rmap [OPTIONS] COMMAND
+	app := cli.App{
+		Name: "Reconmap CLI",
+		Authors: []*cli.Author{
+			{
+				Name:  "Reconmap developers",
+				Email: "devs@reconmap.org",
+			},
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "run",
+				Aliases: []string{"r"},
+				Usage:   "runs a command and upload the results",
+				Action: func(c *cli.Context) error {
+					commands.CreateNewContainer("hello-world")
+					return nil
+				},
+			},
+		},
+	}
 
-Commands
- - get clients|projects|tasks|vulnerabilities
- - create clients|projects|tasks|vulnerabilities
- - import
- - run
- - upload
-
-Find out more information at https://reconmap.org/.
-`
-	fmt.Println(usage)
-
-	fmt.Println(api.RetrieveData())
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

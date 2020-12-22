@@ -30,3 +30,15 @@ Find out more information at https://reconmap.org/.
 ```shell
 $ make
 ```
+
+## Runtime requirements
+
+- Docker engine with API version 1.40
+
+# Troubleshooting
+
+### Error response from daemon: client version 1.XX is too new. Maximum supported API version is 1.40
+
+```shell
+export DOCKER_API_VERSION=1.40
+```
