@@ -1,2 +1,4 @@
 rmap
 dist
+.vscode
+*.txt
