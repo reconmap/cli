@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/client"
 )
 
+// ListContainer list all the containers created by Reconmap
 func ListContainer() error {
 	containerContext := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())

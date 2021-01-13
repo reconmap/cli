@@ -24,8 +24,9 @@ func main() {
 				Aliases: []string{"r"},
 				Usage:   "runs a command and upload the results",
 				Action: func(c *cli.Context) error {
-					commands.CreateNewContainer("hello-world")
-					return nil
+					_, err := commands.CreateNewContainer("reconmap/pentest-container-tools-goohost")
+					//_, err := commands.CreateNewContainer("nginx")
+					return err
 				},
 			},
 			{

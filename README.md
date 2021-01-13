@@ -33,7 +33,7 @@ $ make
 
 ## Runtime requirements
 
-- Docker engine with API version 1.40
+- Docker engine with [API version 1.40](https://docs.docker.com/engine/api/v1.40/)
 
 # Troubleshooting
 
