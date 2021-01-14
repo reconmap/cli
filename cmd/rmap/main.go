@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -20,6 +21,20 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
+				Name:    "login",
+				Aliases: []string{"l"},
+				Usage:   "initiates a session with the server",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "username", Aliases: []string{"u"}},
+					&cli.StringFlag{Name: "password", Aliases: []string{"p"}},
+				},
+				Action: func(c *cli.Context) error {
+					body, err := commands.Login(c.String("username"), c.String("password"))
+					fmt.Printf("%s\n", body)
+					return err
+				},
+			},
+			{
 				Name:    "run",
 				Aliases: []string{"r"},
 				Usage:   "runs a command and upload the results",
@@ -35,6 +50,15 @@ func main() {
 				Usage:   "list Reconmap containers",
 				Action: func(c *cli.Context) error {
 					commands.ListContainer()
+					return nil
+				},
+			},
+			{
+				Name:    "upload-results",
+				Aliases: []string{"u"},
+				Usage:   "upload command results",
+				Action: func(c *cli.Context) error {
+					commands.UploadResults()
 					return nil
 				},
 			},
