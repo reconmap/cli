@@ -21,12 +21,11 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:    "login",
-				Aliases: []string{"l"},
-				Usage:   "initiates a session with the server",
+				Name:  "login",
+				Usage: "initiates a session with the server",
 				Flags: []cli.Flag{
-					&cli.StringFlag{Name: "username", Aliases: []string{"u"}},
-					&cli.StringFlag{Name: "password", Aliases: []string{"p"}},
+					&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Required: true},
+					&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: true},
 				},
 				Action: func(c *cli.Context) error {
 					body, err := commands.Login(c.String("username"), c.String("password"))
