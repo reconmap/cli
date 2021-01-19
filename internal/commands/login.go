@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,16 +20,19 @@ func Login(username string, password string) (string, error) {
 		"password": {password},
 	})
 
-	//okay, moving on...
 	if err != nil {
-		//handle postform error
+		return "", err
+	}
+
+	if response.StatusCode == 403 {
+		return "", errors.New("Invalid credentials")
 	}
 
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		//handle read response error
+		return "", errors.New("Unable to read response from server")
 	}
 
 	var loginResponse LoginResponse
@@ -37,5 +41,5 @@ func Login(username string, password string) (string, error) {
 
 	err = ioutil.WriteFile("rmap-session", []byte(loginResponse.AccessToken), 0644)
 
-	return loginResponse.AccessToken, nil
+	return "Successful login", nil
 }

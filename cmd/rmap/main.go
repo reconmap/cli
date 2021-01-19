@@ -28,8 +28,10 @@ func main() {
 					&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: true},
 				},
 				Action: func(c *cli.Context) error {
-					body, err := commands.Login(c.String("username"), c.String("password"))
-					fmt.Printf("%s\n", body)
+					response, err := commands.Login(c.String("username"), c.String("password"))
+					if err == nil {
+						fmt.Printf("%s\n", response)
+					}
 					return err
 				},
 			},
