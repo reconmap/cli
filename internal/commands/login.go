@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
+
+	"github.com/reconmap/cli/internal/httputils"
 )
 
 type LoginResponse struct {
@@ -15,17 +18,30 @@ type LoginResponse struct {
 func Login(username string, password string) (string, error) {
 	var apiUrl string = "https://api.reconmap.org/users/login"
 	apiUrl = "http://localhost:8080/users/login"
-	response, err := http.PostForm(apiUrl, url.Values{
+
+	formData := url.Values{
 		"username": {username},
 		"password": {password},
-	})
+	}
 
+	client := &http.Client{}
+	req, err := httputils.NewRmapRequest("POST", apiUrl, strings.NewReader(formData.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	response, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
 
-	if response.StatusCode == 403 {
-		return "", errors.New("Invalid credentials")
+	if response.StatusCode != http.StatusOK {
+
+		if response.StatusCode == http.StatusForbidden {
+			return "", errors.New("Invalid credentials")
+		}
+		if response.StatusCode == http.StatusUnauthorized {
+			return "", errors.New("Invalid crednetials")
+		}
+
+		return "", errors.New("Response error received from the server")
 	}
 
 	defer response.Body.Close()

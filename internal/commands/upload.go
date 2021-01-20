@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/reconmap/cli/internal/httputils"
 )
 
 func UploadResults() error {
@@ -39,8 +41,7 @@ func Upload(client *http.Client, session string, url string) (err error) {
 
 	writer.Close()
 
-	// Now that you have a form, you can submit it to your handler.
-	req, err := http.NewRequest("POST", url, body)
+	req, err := httputils.NewRmapRequest("POST", url, body)
 	if err != nil {
 		return
 	}
