@@ -59,8 +59,11 @@ func main() {
 				Aliases: []string{"u"},
 				Usage:   "upload command results",
 				Action: func(c *cli.Context) error {
-					commands.UploadResults()
-					return nil
+					err := commands.UploadResults()
+					if err != nil {
+						fmt.Printf("%s\n", err)
+					}
+					return err
 				},
 			},
 		},

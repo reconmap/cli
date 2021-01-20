@@ -23,11 +23,7 @@ func UploadResults() error {
 	remoteURL = "http://localhost:8080/tasks/results"
 
 	err = Upload(client, session, remoteURL)
-	if err != nil {
-		panic(err)
-	}
-
-	return nil
+	return err
 }
 
 func Upload(client *http.Client, session string, url string) (err error) {
@@ -54,15 +50,13 @@ func Upload(client *http.Client, session string, url string) (err error) {
 	// Don't forget to set the content type, this will contain the boundary.
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	// Submit the request
 	res, err := client.Do(req)
 	if err != nil {
 		return
 	}
 
-	// Check the response
-	if res.StatusCode != http.StatusOK {
-		err = fmt.Errorf("bad status: %s", res.Status)
+	if res.StatusCode == http.StatusUnauthorized {
+		err = fmt.Errorf("your session has expired. Please login again")
 	}
 	return
 }

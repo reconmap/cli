@@ -5,19 +5,10 @@
 Command line interface for the Reconmap pentest automation and reporting tool.
 
 ```
-$ rmap
-Reconmap pentest automation tool.
-
-Usage: rmap [OPTIONS] COMMAND
-
-Commands
- - get clients|projects|tasks|vulnerabilities
- - create clients|projects|tasks|vulnerabilities
- - import
- - run
- - upload
-
-Find out more information at https://reconmap.org/.
+$ ./rmap login -u admin -p ******
+$ ./rmap tasks list
+$ ./rmap tasks run -taskId 1
+$ ./rmap tasks upload-results -taskId 1
 ```
 
 ## Build requirements
