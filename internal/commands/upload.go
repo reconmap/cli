@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -14,21 +13,15 @@ import (
 )
 
 func UploadResults() error {
-	b, err := ioutil.ReadFile("rmap-session")
-	if err != nil {
-		return err
-	}
-	session := string(b)
-
 	var client *http.Client = &http.Client{}
 	var remoteURL string = "https://api.reconmap.org/tasks/results"
 	remoteURL = "http://localhost:8080/tasks/results"
 
-	err = Upload(client, session, remoteURL)
+	err := Upload(client, remoteURL)
 	return err
 }
 
-func Upload(client *http.Client, session string, url string) (err error) {
+func Upload(client *http.Client, url string) (err error) {
 	file, err := os.Open("report-20405-reconmap.org.txt")
 	defer file.Close()
 
@@ -46,8 +39,8 @@ func Upload(client *http.Client, session string, url string) (err error) {
 		return
 	}
 
-	var bearer = "Bearer " + session
-	req.Header.Add("Authorization", bearer)
+	httputils.AddBearerToken(req)
+
 	// Don't forget to set the content type, this will contain the boundary.
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 

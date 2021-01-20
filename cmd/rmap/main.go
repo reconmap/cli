@@ -15,7 +15,7 @@ func main() {
 		Name: "Reconmap CLI",
 		Authors: []*cli.Author{
 			{
-				Name:  "Reconmap developers",
+				Name:  "Reconmap contributors",
 				Email: "devs@reconmap.org",
 			},
 		},
@@ -36,13 +36,14 @@ func main() {
 				},
 			},
 			{
-				Name:    "run",
+				Name:    "run-command",
 				Aliases: []string{"r"},
 				Usage:   "runs a command and upload the results",
+				Flags: []cli.Flag{
+					&cli.IntFlag{Name: "commandId", Aliases: []string{"id"}, Required: true},
+				},
 				Action: func(c *cli.Context) error {
-					_, err := commands.CreateNewContainer("reconmap/pentest-container-tools-goohost")
-					//_, err := commands.CreateNewContainer("nginx")
-					return err
+					return commands.RunCommand(c.Int("commandId"))
 				},
 			},
 			{
