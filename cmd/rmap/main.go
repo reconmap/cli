@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	fmt.Println("Reconmap v1.0 - https://reconmap.org\n")
+
 	app := cli.App{
 		Name: "Reconmap CLI",
 		Authors: []*cli.Author{
@@ -41,9 +43,10 @@ func main() {
 				Usage:   "runs a command and upload the results",
 				Flags: []cli.Flag{
 					&cli.IntFlag{Name: "commandId", Aliases: []string{"id"}, Required: true},
+					&cli.StringSliceFlag{Name: "var", Required: false},
 				},
 				Action: func(c *cli.Context) error {
-					return commands.RunCommand(c.Int("commandId"))
+					return commands.RunCommand(c.Int("commandId"), c.StringSlice("var"))
 				},
 			},
 			{

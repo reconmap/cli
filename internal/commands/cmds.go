@@ -15,7 +15,7 @@ type Command struct {
 	ContainerArgs string `json:"container_args"`
 }
 
-func RunCommand(id int) error {
+func RunCommand(id int, vars []string) error {
 
 	var apiUrl string = "http://localhost:8080/commands/" + strconv.Itoa(id)
 
@@ -36,7 +36,7 @@ func RunCommand(id int) error {
 	body, err := ioutil.ReadAll(response.Body)
 
 	if response.StatusCode != http.StatusOK {
-		return errors.New("error from server: " + string(body))
+		return errors.New("error from server: " + string(response.Status))
 	}
 
 	if err != nil {
@@ -46,7 +46,7 @@ func RunCommand(id int) error {
 	var command Command
 
 	json.Unmarshal([]byte(body), &command)
-	_, err = CreateNewContainer(command)
+	_, err = CreateNewContainer(command, vars)
 
 	return err
 }

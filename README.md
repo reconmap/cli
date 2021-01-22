@@ -6,9 +6,13 @@ Command line interface for the Reconmap pentest automation and reporting tool.
 
 ```
 $ ./rmap login -u admin -p ******
-$ ./rmap tasks list
-$ ./rmap tasks run -taskId 1
-$ ./rmap tasks upload-results -taskId 1
+$ ./rmap run-command -id 2 -var Host=soki.com.ar
+Reconmap v1.0 - https://reconmap.org
+
+> Downloading docker image 'instrumentisto/nmap'
+> Starting container.
+> Container started.
+> Container 'instrumentisto/nmap' exited.
 ```
 
 ## Build requirements

@@ -3,3 +3,4 @@ dist
 .vscode
 *.txt
 rmap-session
+nmap-output.xml

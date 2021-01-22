@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -15,28 +16,35 @@ import (
 )
 
 // CreateNewContainer creates and starts a new container
-func CreateNewContainer(command Command) (string, error) {
+func CreateNewContainer(command Command, vars []string) (string, error) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		fmt.Println("Unable to create docker client")
 		panic(err)
 	}
 
+	var updatedArgs = command.ContainerArgs
+	for _, v := range vars {
+		var tokens = strings.Split(v, "=")
+		var validID = regexp.MustCompile("{{{" + tokens[0] + ".*}}}")
+		updatedArgs = validID.ReplaceAllString(updatedArgs, tokens[1])
+	}
+
 	currentDir, err := os.Getwd()
 
 	bgContext := context.Background()
 
+	fmt.Printf("> Downloading docker image '%s'\n", command.DockerImage)
 	reader, err := cli.ImagePull(bgContext, command.DockerImage, types.ImagePullOptions{})
 	if err != nil {
 		panic(err)
 	}
-	io.Copy(os.Stdout, reader)
 
 	cont, err := cli.ContainerCreate(
 		bgContext,
 		&container.Config{
 			Image:        command.DockerImage,
-			Cmd:          strings.Split(command.ContainerArgs, " "),
+			Cmd:          strings.Split(updatedArgs, " "),
 			WorkingDir:   "/tools/qqq",
 			AttachStdout: true,
 			AttachStderr: true,
@@ -66,13 +74,13 @@ func CreateNewContainer(command Command) (string, error) {
 		return "", err
 	}
 	io.Copy(os.Stdout, reader)
-	defer reader.Close()
 
+	fmt.Printf("> Starting container.\n")
 	if err := cli.ContainerStart(bgContext, cont.ID, types.ContainerStartOptions{}); err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Container %s is started\n", cont.ID)
+	fmt.Printf("> Container started.\n")
 	statusCh, errCh := cli.ContainerWait(bgContext, cont.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
@@ -82,8 +90,8 @@ func CreateNewContainer(command Command) (string, error) {
 	case <-statusCh:
 	}
 
-	fmt.Println("Exit wait")
 	time.Sleep(3000)
+	fmt.Printf("> Container '%s' exited.\n", command.DockerImage)
 
 	return cont.ID, nil
 }
