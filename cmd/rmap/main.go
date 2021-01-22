@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	fmt.Println("Reconmap v1.0 - https://reconmap.org\n")
+	fmt.Print("Reconmap v1.0 - https://reconmap.org\n\n")
 
 	app := cli.App{
 		Name: "Reconmap CLI",
