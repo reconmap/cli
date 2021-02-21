@@ -1,80 +1,83 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/commands"
+	"github.com/reconmap/cli/internal/terminal"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
 
-	fmt.Print("Reconmap v1.0 - https://reconmap.org\n\n")
+	banner := "ICBfX19fICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICANCiB8ICBfIFwgX19fICBfX18gX19fICBfIF9fICBfIF9fIF9fXyAgIF9fIF8gXyBfXyAgDQogfCB8XykgLyBfIFwvIF9fLyBfIFx8ICdfIFx8ICdfIGAgXyBcIC8gX2AgfCAnXyBcIA0KIHwgIF8gPCAgX18vIChffCAoXykgfCB8IHwgfCB8IHwgfCB8IHwgKF98IHwgfF8pIHwNCiB8X3wgXF9cX19ffFxfX19cX19fL3xffCB8X3xffCB8X3wgfF98XF9fLF98IC5fXy8gDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfF98ICAgIA0KDQo="
+	sDec, _ := base64.StdEncoding.DecodeString(banner)
+	fmt.Print(string(sDec))
 
-	app := cli.App{
-		Name: "Reconmap CLI",
-		Authors: []*cli.Author{
-			{
-				Name:  "Reconmap contributors",
-				Email: "devs@reconmap.org",
+	app := cli.NewApp()
+	app.Version = "1.0"
+	app.Copyright = "Reconmap license"
+	app.Usage = "Reconmap's command line interface"
+	app.Description = "Reconmap's command line interface"
+	app.Authors = []*cli.Author{
+		{
+			Name:  "Reconmap contributors",
+			Email: "devs@reconmap.org",
+		},
+	}
+	app.Commands = []*cli.Command{
+		{
+			Name:  "login",
+			Usage: "initiates a session with the server",
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Required: true},
+				&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: true},
+			},
+			Action: func(c *cli.Context) error {
+				err := commands.Login(c.String("username"), c.String("password"))
+				return err
 			},
 		},
-		Commands: []*cli.Command{
-			{
-				Name:  "login",
-				Usage: "initiates a session with the server",
-				Flags: []cli.Flag{
-					&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Required: true},
-					&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: true},
-				},
-				Action: func(c *cli.Context) error {
-					response, err := commands.Login(c.String("username"), c.String("password"))
-					if err == nil {
-						fmt.Printf("%s\n", response)
-					}
+		{
+			Name:    "run-command",
+			Aliases: []string{"r"},
+			Usage:   "runs a command and upload the results",
+			Flags: []cli.Flag{
+				&cli.IntFlag{Name: "commandId", Aliases: []string{"cid"}, Required: true},
+				&cli.StringSliceFlag{Name: "var", Required: false},
+				&cli.IntFlag{Name: "taskId", Aliases: []string{"tid"}, Required: false},
+			},
+			Action: func(c *cli.Context) error {
+				taskId := c.Int("taskId")
+				command, err := api.GetCommandById(c.Int("commandId"))
+				if err != nil {
 					return err
-				},
-			},
-			{
-				Name:    "run-command",
-				Aliases: []string{"r"},
-				Usage:   "runs a command and upload the results",
-				Flags: []cli.Flag{
-					&cli.IntFlag{Name: "commandId", Aliases: []string{"id"}, Required: true},
-					&cli.StringSliceFlag{Name: "var", Required: false},
-				},
-				Action: func(c *cli.Context) error {
-					return commands.RunCommand(c.Int("commandId"), c.StringSlice("var"))
-				},
-			},
-			{
-				Name:    "list",
-				Aliases: []string{"l"},
-				Usage:   "list Reconmap containers",
-				Action: func(c *cli.Context) error {
-					commands.ListContainer()
-					return nil
-				},
-			},
-			{
-				Name:    "upload-results",
-				Aliases: []string{"u"},
-				Usage:   "upload command results",
-				Action: func(c *cli.Context) error {
-					err := commands.UploadResults()
-					if err != nil {
-						fmt.Printf("%s\n", err)
-					}
+				}
+				err = commands.RunCommand(command, c.StringSlice("var"))
+				if err != nil {
 					return err
-				},
+				}
+
+				err = commands.UploadResults(command, taskId)
+				return err
+			},
+		},
+		{
+			Name:    "list",
+			Aliases: []string{"l"},
+			Usage:   "list Reconmap containers",
+			Action: func(c *cli.Context) error {
+				return commands.ListContainer()
 			},
 		},
 	}
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		terminal.PrintRedCross()
+		fmt.Printf(" %s\n", err)
 	}
 }

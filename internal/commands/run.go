@@ -7,20 +7,21 @@ import (
 	"os"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/terminal"
 )
 
 // CreateNewContainer creates and starts a new container
-func CreateNewContainer(command Command, vars []string) (string, error) {
+func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		fmt.Println("Unable to create docker client")
-		panic(err)
+		return "", err
 	}
 
 	var updatedArgs = command.ContainerArgs
@@ -34,18 +35,23 @@ func CreateNewContainer(command Command, vars []string) (string, error) {
 
 	bgContext := context.Background()
 
-	fmt.Printf("> Downloading docker image '%s'\n", command.DockerImage)
+	terminal.PrintYellowDot()
+	fmt.Printf(" Downloading docker image '%s'\n", command.DockerImage)
 	reader, err := cli.ImagePull(bgContext, command.DockerImage, types.ImagePullOptions{})
 	if err != nil {
 		panic(err)
 	}
 
+	commandLineArgs := strings.Split(updatedArgs, " ")
+	terminal.PrintYellowDot()
+	fmt.Printf(" Using command line args: %s", commandLineArgs)
+
 	cont, err := cli.ContainerCreate(
 		bgContext,
 		&container.Config{
 			Image:        command.DockerImage,
-			Cmd:          strings.Split(updatedArgs, " "),
-			WorkingDir:   "/tools/qqq",
+			Cmd:          commandLineArgs,
+			WorkingDir:   "/reconmap",
 			AttachStdout: true,
 			AttachStderr: true,
 			Tty:          true,
@@ -58,40 +64,62 @@ func CreateNewContainer(command Command, vars []string) (string, error) {
 				{
 					Type:   mount.TypeBind,
 					Source: currentDir,
-					Target: "/tools/qqq",
+					Target: "/reconmap",
 				},
 			},
-		}, nil, nil, "")
+		}, nil, nil, "reconmap-"+command.ShortName)
 	if err != nil {
 		panic(err)
 	}
 
+	resp, err := cli.ContainerAttach(bgContext, cont.ID, types.ContainerAttachOptions{
+		Stream: true,
+		Stdin:  false,
+		Stdout: true,
+		Stderr: true,
+	})
+	if err != nil {
+		return "", err
+	}
+
 	reader, err = cli.ContainerLogs(bgContext, cont.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
+		ShowStderr: true,
 		Follow:     true,
 	})
 	if err != nil {
 		return "", err
 	}
-	io.Copy(os.Stdout, reader)
+	stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
 
-	fmt.Printf("> Starting container.\n")
+	terminal.PrintYellowDot()
+	fmt.Printf(" Starting container.\n")
 	if err := cli.ContainerStart(bgContext, cont.ID, types.ContainerStartOptions{}); err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("> Container started.\n")
+	go func() {
+		defer resp.Close()
+		io.Copy(os.Stdout, resp.Reader)
+	}()
+
+	terminal.PrintYellowDot()
+	fmt.Printf(" Container started.\n")
 	statusCh, errCh := cli.ContainerWait(bgContext, cont.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
 		if err != nil {
 			panic(err)
 		}
-	case <-statusCh:
+	case status := <-statusCh:
+		terminal.PrintYellowDot()
+		fmt.Printf(" Container '%s' exited with code %d.\n", command.DockerImage, status.StatusCode)
 	}
 
-	time.Sleep(3000)
-	fmt.Printf("> Container '%s' exited.\n", command.DockerImage)
+	stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+
+	terminal.PrintGreenTick()
+	fmt.Printf(" Done\n")
 
 	return cont.ID, nil
 }

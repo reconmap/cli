@@ -8,29 +8,37 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
+	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/httputils"
+	"github.com/reconmap/cli/internal/terminal"
 )
 
-func UploadResults() error {
+func UploadResults(command *api.Command, taskId int) error {
 	var client *http.Client = &http.Client{}
-	var remoteURL string = "https://api.reconmap.org/tasks/results"
-	remoteURL = "http://localhost:8080/tasks/results"
+	var remoteURL string = "https://api.reconmap.org/commands/outputs"
+	remoteURL = "http://localhost:8080/commands/outputs"
 
-	err := Upload(client, remoteURL)
+	err := Upload(client, remoteURL, command.OutputFileName, taskId)
 	return err
 }
 
-func Upload(client *http.Client, url string) (err error) {
-	file, err := os.Open("report-20405-reconmap.org.txt")
+func Upload(client *http.Client, url string, outputFileName string, taskId int) (err error) {
+
+	if _, err := os.Stat(outputFileName); os.IsNotExist(err) {
+		return fmt.Errorf("Output file '%s' could not be found", outputFileName)
+	}
+
+	file, err := os.Open(outputFileName)
 	defer file.Close()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("resultFile", filepath.Base("report-20405-reconmap.org.txt"))
+	part, err := writer.CreateFormFile("resultFile", filepath.Base(outputFileName))
 	_, err = io.Copy(part, file)
 
-	writer.WriteField("taskId", "4")
+	writer.WriteField("taskId", strconv.Itoa(taskId))
 
 	writer.Close()
 
@@ -41,9 +49,10 @@ func Upload(client *http.Client, url string) (err error) {
 
 	httputils.AddBearerToken(req)
 
-	// Don't forget to set the content type, this will contain the boundary.
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
+	terminal.PrintYellowDot()
+	fmt.Printf(" Uploading command output '%s' to the server.\n", outputFileName)
 	res, err := client.Do(req)
 	if err != nil {
 		return
@@ -52,5 +61,8 @@ func Upload(client *http.Client, url string) (err error) {
 	if res.StatusCode == http.StatusUnauthorized {
 		err = fmt.Errorf("your session has expired. Please login again")
 	}
+	terminal.PrintGreenTick()
+	fmt.Printf(" Done\n")
+
 	return
 }
