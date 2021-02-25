@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -41,6 +42,9 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 	if err != nil {
 		panic(err)
 	}
+	buf := bytes.NewBufferString("")
+	io.Copy(buf, reader)
+	fmt.Println(buf.String())
 
 	commandLineArgs := strings.Split(updatedArgs, " ")
 	terminal.PrintYellowDot()

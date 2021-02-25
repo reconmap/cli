@@ -9,13 +9,10 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/httputils"
 	"github.com/reconmap/cli/internal/terminal"
 )
-
-type LoginResponse struct {
-	AccessToken string `json:"access_token"`
-}
 
 func Login(username string, password string) error {
 	var apiUrl string = "https://api.reconmap.org/users/login"
@@ -53,7 +50,7 @@ func Login(username string, password string) error {
 		return errors.New("Unable to read response from server")
 	}
 
-	var loginResponse LoginResponse
+	var loginResponse api.LoginResponse
 
 	json.Unmarshal([]byte(body), &loginResponse)
 
