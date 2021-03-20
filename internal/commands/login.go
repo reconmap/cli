@@ -16,7 +16,10 @@ import (
 )
 
 func Login(username string, password string) error {
-	var config = configuration.ReadConfig()
+	config, err := configuration.ReadConfig()
+	if err != nil {
+		return err
+	}
 	var apiUrl string = config.ApiUrl + "/users/login"
 
 	formData := url.Values{

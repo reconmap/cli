@@ -11,37 +11,47 @@ type Config struct {
 	ApiUrl string `json:"api-url"`
 }
 
-func SaveConfig(config Config) (string, error) {
+const configFileName = "config.json"
+
+func getReconmapConfigDirectory() (string, error) {
 	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
 
-	path := filepath.Join(home, ".reconmap")
+	return filepath.Join(home, ".reconmap"), nil
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(path, os.ModePerm)
+}
+
+func SaveConfig(config Config) (string, error) {
+	var reconmapConfigDir, err = getReconmapConfigDirectory()
+
+	if _, err := os.Stat(reconmapConfigDir); os.IsNotExist(err) {
+		os.MkdirAll(reconmapConfigDir, os.ModePerm)
 	}
 
 	jsondata, _ := json.MarshalIndent(config, "", " ")
 
-	filepath := filepath.Join(path, "config.json")
+	filepath := filepath.Join(reconmapConfigDir, configFileName)
 	err = ioutil.WriteFile(filepath, jsondata, 400)
 
 	return filepath, err
 }
 
-func ReadConfig() *Config {
-	home, err := os.UserHomeDir()
+func ReadConfig() (*Config, error) {
+	var reconmapConfigDir, err = getReconmapConfigDirectory()
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	path := filepath.Join(home, ".reconmap", "config.json")
+	path := filepath.Join(reconmapConfigDir, configFileName)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return nil
+		return nil, err
 	}
 
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer jsonFile.Close()
 
@@ -50,5 +60,5 @@ func ReadConfig() *Config {
 	config := Config{}
 	err = json.Unmarshal(bytes, &config)
 
-	return &config
+	return &config, nil
 }

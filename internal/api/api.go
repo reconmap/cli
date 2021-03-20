@@ -12,7 +12,10 @@ import (
 )
 
 func GetCommandById(id int) (*Command, error) {
-	var config = configuration.ReadConfig()
+	config, err := configuration.ReadConfig()
+	if err != nil {
+		return nil, err
+	}
 	var apiUrl string = config.ApiUrl + "/commands/" + strconv.Itoa(id)
 
 	client := &http.Client{}
@@ -47,7 +50,10 @@ func GetCommandById(id int) (*Command, error) {
 }
 
 func GetCommandsByKeywords(keywords string) (*Commands, error) {
-	var config = configuration.ReadConfig()
+	config, err := configuration.ReadConfig()
+	if err != nil {
+		return nil, err
+	}
 	var apiUrl string = config.ApiUrl + "/commands?keywords=" + keywords
 
 	client := &http.Client{}

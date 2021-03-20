@@ -17,12 +17,14 @@ import (
 )
 
 func UploadResults(command *api.Command, taskId int) error {
-	var client *http.Client = &http.Client{}
-
-	var config = configuration.ReadConfig()
+	config, err := configuration.ReadConfig()
+	if err != nil {
+		return err
+	}
 	var remoteURL string = config.ApiUrl + "/commands/outputs"
 
-	err := Upload(client, remoteURL, command.OutputFileName, taskId)
+	var client *http.Client = &http.Client{}
+	err = Upload(client, remoteURL, command.OutputFileName, taskId)
 	return err
 }
 
