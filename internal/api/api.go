@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/reconmap/cli/internal/configuration"
 	"github.com/reconmap/cli/internal/httputils"
 )
 
 func GetCommandById(id int) (*Command, error) {
-	var apiUrl string = "http://localhost:8080/commands/" + strconv.Itoa(id)
+	var config = configuration.ReadConfig()
+	var apiUrl string = config.ApiUrl + "/commands/" + strconv.Itoa(id)
 
 	client := &http.Client{}
 	req, err := httputils.NewRmapRequest("GET", apiUrl, nil)
@@ -45,7 +47,8 @@ func GetCommandById(id int) (*Command, error) {
 }
 
 func GetCommandsByKeywords(keywords string) (*Commands, error) {
-	var apiUrl string = "http://localhost:8080/commands?keywords=" + keywords
+	var config = configuration.ReadConfig()
+	var apiUrl string = config.ApiUrl + "/commands?keywords=" + keywords
 
 	client := &http.Client{}
 	req, err := httputils.NewRmapRequest("GET", apiUrl, nil)

@@ -10,13 +10,14 @@ import (
 	"strings"
 
 	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/configuration"
 	"github.com/reconmap/cli/internal/httputils"
 	"github.com/reconmap/cli/internal/terminal"
 )
 
 func Login(username string, password string) error {
-	var apiUrl string = "https://api.reconmap.org/users/login"
-	apiUrl = "http://localhost:8080/users/login"
+	var config = configuration.ReadConfig()
+	var apiUrl string = config.ApiUrl + "/users/login"
 
 	formData := url.Values{
 		"username": {username},

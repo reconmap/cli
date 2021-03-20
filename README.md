@@ -5,8 +5,9 @@
 Command line interface for the Reconmap pentest automation and reporting tool.
 
 ```
+$ ./rmap config --api-url https://api.reconmap.org
 $ ./rmap login -u admin -p ******
-$ ./rmap run-command -id 2 -var Host=soki.com.ar
+$ ./rmap command run -cid 2 -var Host=soki.com.ar
 Reconmap v1.0 - https://reconmap.org
 
 > Downloading docker image 'instrumentisto/nmap'

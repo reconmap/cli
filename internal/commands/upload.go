@@ -11,14 +11,16 @@ import (
 	"strconv"
 
 	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/configuration"
 	"github.com/reconmap/cli/internal/httputils"
 	"github.com/reconmap/cli/internal/terminal"
 )
 
 func UploadResults(command *api.Command, taskId int) error {
 	var client *http.Client = &http.Client{}
-	var remoteURL string = "https://api.reconmap.org/commands/outputs"
-	remoteURL = "http://localhost:8080/commands/outputs"
+
+	var config = configuration.ReadConfig()
+	var remoteURL string = config.ApiUrl + "/commands/outputs"
 
 	err := Upload(client, remoteURL, command.OutputFileName, taskId)
 	return err

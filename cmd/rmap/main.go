@@ -33,13 +33,24 @@ func main() {
 	app.Commands = []*cli.Command{
 		{
 			Name:  "login",
-			Usage: "Initiates a session with the server",
+			Usage: "Initiate session with the server",
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Required: true},
 				&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: true},
 			},
 			Action: func(c *cli.Context) error {
 				err := commands.Login(c.String("username"), c.String("password"))
+				return err
+			},
+		},
+		{
+			Name:  "config",
+			Usage: "Configure server settings",
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "api-url", Aliases: []string{"url"}, Required: true},
+			},
+			Action: func(c *cli.Context) error {
+				err := commands.Configure(c.String("api-url"))
 				return err
 			},
 		},
@@ -81,7 +92,7 @@ func main() {
 				},
 				{
 					Name:  "run",
-					Usage: "Runs a command and upload the results",
+					Usage: "Run a command and upload the results",
 					Flags: []cli.Flag{
 						&cli.IntFlag{Name: "commandId", Aliases: []string{"cid"}, Required: true},
 						&cli.StringSliceFlag{Name: "var", Required: false},
@@ -112,7 +123,7 @@ func main() {
 				{
 					Name:    "list-containers",
 					Aliases: []string{"l"},
-					Usage:   "list all Reconmap containers",
+					Usage:   "List all Reconmap containers",
 					Action: func(c *cli.Context) error {
 						return commands.ListContainer()
 					},
