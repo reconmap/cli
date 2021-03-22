@@ -7,6 +7,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/build"
 	"github.com/reconmap/cli/internal/commands"
 	"github.com/reconmap/cli/internal/terminal"
 	"github.com/rodaine/table"
@@ -20,7 +21,7 @@ func main() {
 	fmt.Print(string(sDec))
 
 	app := cli.NewApp()
-	app.Version = "1.0"
+	app.Version = build.BuildVersion
 	app.Copyright = "Reconmap license"
 	app.Usage = "Reconmap's command line interface"
 	app.Description = "Reconmap's command line interface"
@@ -40,6 +41,15 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				err := commands.Login(c.String("username"), c.String("password"))
+				return err
+			},
+		},
+		{
+			Name:  "logout",
+			Usage: "Terminate session with the server",
+			Flags: []cli.Flag{},
+			Action: func(c *cli.Context) error {
+				err := commands.Logout()
 				return err
 			},
 		},

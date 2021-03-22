@@ -13,7 +13,7 @@ type Config struct {
 
 const configFileName = "config.json"
 
-func getReconmapConfigDirectory() (string, error) {
+func GetReconmapConfigDirectory() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
@@ -24,7 +24,7 @@ func getReconmapConfigDirectory() (string, error) {
 }
 
 func SaveConfig(config Config) (string, error) {
-	var reconmapConfigDir, err = getReconmapConfigDirectory()
+	var reconmapConfigDir, err = GetReconmapConfigDirectory()
 
 	if _, err := os.Stat(reconmapConfigDir); os.IsNotExist(err) {
 		os.MkdirAll(reconmapConfigDir, os.ModePerm)
@@ -39,7 +39,7 @@ func SaveConfig(config Config) (string, error) {
 }
 
 func ReadConfig() (*Config, error) {
-	var reconmapConfigDir, err = getReconmapConfigDirectory()
+	var reconmapConfigDir, err = GetReconmapConfigDirectory()
 	if err != nil {
 		return nil, err
 	}
