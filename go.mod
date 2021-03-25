@@ -1,6 +1,6 @@
 module github.com/reconmap/cli
 
-go 1.15
+go 1.16
 
 require (
 	github.com/Microsoft/go-winio v0.4.16 // indirect
@@ -17,9 +17,8 @@ require (
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
-	github.com/rodaine/table v1.0.1 // indirect
+	github.com/rodaine/table v1.0.1
 	github.com/sirupsen/logrus v1.7.0 // indirect
-	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect

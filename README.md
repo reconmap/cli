@@ -4,34 +4,54 @@
 
 Command line interface for the Reconmap pentest automation and reporting tool.
 
-```
+## Run instructions
+
+### Configure
+
+```shell
 $ ./rmap config --api-url https://api.reconmap.org
-$ ./rmap login -u admin -p ******
-$ ./rmap command run -cid 2 -var Host=soki.com.ar
-Reconmap v1.0 - https://reconmap.org
-
-> Downloading docker image 'instrumentisto/nmap'
-> Starting container.
-> Container started.
-> Container 'instrumentisto/nmap' exited.
 ```
 
-## Build requirements
+(replacing api.reconmap.org with your actual API URL)
 
-- Golang 1.15+
-- Make
+### Logging in and out
+
+```shell
+$ ./rmap login -u admin -p ******
+
+$ ./rmap logout
+```
+
+### Security commands
+
+To search for a command to run
+
+```shell
+$ ./rmap command search -k amass
+```
+
+To execute a command once you know its arguments
+
+```shell
+$ ./rmap command run -cid 2 -var Host=soki.com.ar
+```
+
+(if you are using Docker containers with your commands you require the Docker engine with [API version 1.40](https://docs.docker.com/engine/api/v1.40/))
 
 ## Build instructions
+
+### Requirements
+
+- Golang 1.16+
+- Make
+
+### Compilation
 
 ```shell
 $ make
 ```
 
-## Runtime requirements
-
-- Docker engine with [API version 1.40](https://docs.docker.com/engine/api/v1.40/)
-
-# Troubleshooting
+## Troubleshooting
 
 ### Error response from daemon: client version 1.XX is too new. Maximum supported API version is 1.40
 
