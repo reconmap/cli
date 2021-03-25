@@ -4,6 +4,8 @@
 
 Command line interface for the Reconmap pentest automation and reporting tool.
 
+[![asciicast](https://asciinema.org/a/402505.svg)](https://asciinema.org/a/402505)
+
 ## Run instructions
 
 ### Configure
