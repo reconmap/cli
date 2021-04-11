@@ -15,7 +15,7 @@ Command line interface for the Reconmap pentest automation and reporting tool.
 $ ./rmap config --api-url https://api.reconmap.org
 ```
 
-Make sure you replace `api.reconmap.org` with your actual API URL. Users from our SaaS offering should enter something like `https://ACCOUNTNAME-api.reconmap.com`.
+Make sure you replace `https://api.reconmap.org` with your actual API URL. Users from our [SaaS](https://reconmap.com) offering should enter something like `https://ACCOUNTNAME-api.reconmap.com`.
 
 ### Logging in and out
 
