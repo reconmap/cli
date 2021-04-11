@@ -1,4 +1,5 @@
 ![Build and test workflow](https://github.com/Reconmap/cli/workflows/Build%20and%20test%20workflow/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/8a2a847901e80305051b/maintainability)](https://codeclimate.com/github/reconmap/cli/maintainability)
 
 # Reconmap CLI
 
