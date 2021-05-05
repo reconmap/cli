@@ -62,3 +62,17 @@ func ReadConfig() (*Config, error) {
 
 	return &config, nil
 }
+
+func HasConfig() bool {
+	var reconmapConfigDir, err = GetReconmapConfigDirectory()
+	if err != nil {
+		return false
+	}
+	path := filepath.Join(reconmapConfigDir, configFileName)
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+
+	return true
+}

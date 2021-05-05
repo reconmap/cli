@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 
@@ -9,11 +10,19 @@ import (
 	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/build"
 	"github.com/reconmap/cli/internal/commands"
+	"github.com/reconmap/cli/internal/configuration"
 	"github.com/reconmap/cli/internal/terminal"
 	"github.com/rodaine/table"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/term"
 )
+
+func preActionChecks(c *cli.Context) error {
+	if !configuration.HasConfig() {
+		return errors.New("Rmap has not been configured. Please call the 'rmap configure' command first.")
+	}
+	return nil
+}
 
 func main() {
 
@@ -42,6 +51,7 @@ func main() {
 				&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Required: true},
 				&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: false},
 			},
+			Before: preActionChecks,
 			Action: func(c *cli.Context) error {
 				var password string
 				if c.IsSet("password") {
@@ -60,9 +70,10 @@ func main() {
 			},
 		},
 		{
-			Name:  "logout",
-			Usage: "Terminate session with the server",
-			Flags: []cli.Flag{},
+			Name:   "logout",
+			Usage:  "Terminate session with the server",
+			Flags:  []cli.Flag{},
+			Before: preActionChecks,
 			Action: func(c *cli.Context) error {
 				err := commands.Logout()
 				return err
@@ -84,6 +95,7 @@ func main() {
 			Name:    "command",
 			Aliases: []string{"c"},
 			Usage:   "Command related options",
+			Before:  preActionChecks,
 			Subcommands: []*cli.Command{
 				{
 					Name:  "search",
