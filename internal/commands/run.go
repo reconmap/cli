@@ -48,7 +48,7 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 
 	commandLineArgs := strings.Split(updatedArgs, " ")
 	terminal.PrintYellowDot()
-	fmt.Printf(" Using command line args: %s", commandLineArgs)
+	fmt.Printf(" Using command line args: %s\n", commandLineArgs)
 
 	cont, err := cli.ContainerCreate(
 		bgContext,
