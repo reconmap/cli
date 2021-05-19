@@ -12,15 +12,15 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
-	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/containers"
 	"github.com/reconmap/cli/internal/terminal"
 )
 
 // CreateNewContainer creates and starts a new container
 func CreateNewContainer(command *api.Command, vars []string) (string, error) {
-	cli, err := client.NewEnvClient()
+	cli, err := containers.CreateNewClient()
 	if err != nil {
 		return "", err
 	}

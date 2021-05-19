@@ -6,13 +6,13 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/client"
+	"github.com/reconmap/cli/internal/containers"
 )
 
 // ListContainer list all the containers created by Reconmap
 func ListContainer() error {
 	containerContext := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := containers.CreateNewClient()
 	if err != nil {
 		panic(err)
 	}
