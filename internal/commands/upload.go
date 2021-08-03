@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/configuration"
@@ -17,6 +19,10 @@ import (
 )
 
 func UploadResults(command *api.Command, taskId int) error {
+	if len(strings.TrimSpace(command.OutputFileName)) == 0 {
+		return errors.New("The command has not defined an output filename. Nothing has been uploaded to the server.")
+	}
+
 	config, err := configuration.ReadConfig()
 	if err != nil {
 		return err
