@@ -11,7 +11,7 @@ import (
 	"github.com/reconmap/cli/internal/build"
 	"github.com/reconmap/cli/internal/commands"
 	"github.com/reconmap/cli/internal/configuration"
-	"github.com/reconmap/cli/internal/terminal"
+	"github.com/reconmap/cli/internal/logging"
 	"github.com/rodaine/table"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/term"
@@ -25,22 +25,23 @@ func preActionChecks(c *cli.Context) error {
 }
 
 func main() {
-
 	banner := "ICBfX19fICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICANCiB8ICBfIFwgX19fICBfX18gX19fICBfIF9fICBfIF9fIF9fXyAgIF9fIF8gXyBfXyAgDQogfCB8XykgLyBfIFwvIF9fLyBfIFx8ICdfIFx8ICdfIGAgXyBcIC8gX2AgfCAnXyBcIA0KIHwgIF8gPCAgX18vIChffCAoXykgfCB8IHwgfCB8IHwgfCB8IHwgKF98IHwgfF8pIHwNCiB8X3wgXF9cX19ffFxfX19cX19fL3xffCB8X3xffCB8X3wgfF98XF9fLF98IC5fXy8gDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfF98ICAgIA0KDQo="
 	sDec, _ := base64.StdEncoding.DecodeString(banner)
 	color.Set(color.FgHiRed)
 	fmt.Print(string(sDec))
 	color.Unset()
 
+	logger := logging.GetLoggerInstance()
+	defer logger.Sync()
+
 	app := cli.NewApp()
 	app.Version = build.BuildVersion
-	app.Copyright = "Reconmap license"
-	app.Usage = "Reconmap's command line interface"
+	app.Copyright = "GNU General Public License v3.0"
+	app.Usage = "Reconmap's CLI"
 	app.Description = "Reconmap's command line interface"
 	app.Authors = []*cli.Author{
 		{
-			Name:  "Reconmap contributors",
-			Email: "devs@reconmap.org",
+			Name: "Reconmap (https://reconmap.org)",
 		},
 	}
 	app.Commands = []*cli.Command{
@@ -172,7 +173,6 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		terminal.PrintRedCross()
-		fmt.Printf(" %s\n", err)
+		logger.Error(err)
 	}
 }

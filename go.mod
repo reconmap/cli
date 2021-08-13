@@ -14,6 +14,9 @@ require (
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/rodaine/table v1.0.1
 	github.com/urfave/cli/v2 v2.3.0
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.19.0
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b
