@@ -6,8 +6,9 @@ type LoginResponse struct {
 
 type Command struct {
 	ID             int    `json:"id"`
-	ShortName      string `json:"short_name"`
+	Name           string `json:"name"`
 	Description    string `json:"description"`
+	OutputParser   string `json:"output_parser"`
 	ExecutableType string `json:"executable_type"`
 	ExecutablePath string `json:"executable_path"`
 	DockerImage    string `json:"docker_image"`

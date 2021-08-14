@@ -71,7 +71,7 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 					Target: "/reconmap",
 				},
 			},
-		}, nil, nil, "reconmap-"+command.ShortName)
+		}, nil, nil, "reconmap-"+command.Name)
 	if err != nil {
 		panic(err)
 	}

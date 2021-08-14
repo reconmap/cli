@@ -117,11 +117,11 @@ func main() {
 						headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 						columnFmt := color.New(color.FgYellow).SprintfFunc()
 
-						tbl := table.New("ID", "Short name", "Description", "Executable type", "Executable path", "Arguments")
+						tbl := table.New("ID", "Name", "Description", "Output parser", "Executable type", "Executable path", "Arguments")
 						tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
 						for _, command := range *commands {
-							tbl.AddRow(command.ID, command.ShortName, command.Description, command.ExecutableType, command.ExecutablePath, command.ContainerArgs)
+							tbl.AddRow(command.ID, command.Name, command.Description, command.OutputParser, command.ExecutableType, command.ExecutablePath, command.ContainerArgs)
 
 						}
 						tbl.Print()
