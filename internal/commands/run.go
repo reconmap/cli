@@ -8,9 +8,11 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/reconmap/cli/internal/api"
@@ -28,7 +30,7 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 	var updatedArgs = command.ContainerArgs
 	for _, v := range vars {
 		var tokens = strings.Split(v, "=")
-		var validID = regexp.MustCompile("{{{" + tokens[0] + ".*}}}")
+		var validID = regexp.MustCompile("{{{" + tokens[0] + ".*?}}}")
 		updatedArgs = validID.ReplaceAllString(updatedArgs, tokens[1])
 	}
 
@@ -49,6 +51,31 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 	commandLineArgs := strings.Split(updatedArgs, " ")
 	terminal.PrintYellowDot()
 	fmt.Printf(" Using command line args: %s\n", commandLineArgs)
+
+	var containerName string = "reconmap-" + command.Name
+
+	f := filters.NewArgs(filters.KeyValuePair{Key: "name", Value: containerName})
+	containers, err := cli.ContainerList(bgContext, types.ContainerListOptions{
+		Filters: f,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	if len(containers) > 0 {
+		for _, container := range containers {
+			var timeout time.Duration = 5 * time.Second
+			fmt.Printf("Container ID: %s, %s\n", container.Image, container.ID)
+			cli.ContainerStop(bgContext, container.ID, &timeout)
+			err = cli.ContainerRemove(bgContext, container.ID, types.ContainerRemoveOptions{})
+			if err != nil {
+				return "", err
+			}
+
+		}
+	} else {
+		fmt.Println("There are no containers running")
+	}
 
 	cont, err := cli.ContainerCreate(
 		bgContext,
@@ -71,7 +98,7 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 					Target: "/reconmap",
 				},
 			},
-		}, nil, nil, "reconmap-"+command.Name)
+		}, nil, nil, containerName)
 	if err != nil {
 		panic(err)
 	}
