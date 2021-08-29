@@ -19,10 +19,13 @@ type Command struct {
 type Commands []Command
 
 type Task struct {
-	ID      int    `json:"id"`
-	Summary string `json:"summary"`
-	Status  string `json:"status"`
+	ID          int    `json:"id"`
+	Summary     string `json:"summary"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
 }
+
+type Tasks []Task
 
 type Vulnerability struct {
 	ID      int    `json:"id"`

@@ -12,7 +12,7 @@ Command line interface for the Reconmap pentest automation and reporting tool.
 ### Configure
 
 ```shell
-$ ./rmap config --api-url https://api.reconmap.org
+./rmap config --api-url https://api.reconmap.org
 ```
 
 Make sure you replace `https://api.reconmap.org` with your actual API URL. Users from our [SaaS](https://reconmap.com) offering should enter something like `https://ACCOUNTNAME-api.reconmap.com`.
@@ -20,23 +20,30 @@ Make sure you replace `https://api.reconmap.org` with your actual API URL. Users
 ### Logging in and out
 
 ```shell
-$ ./rmap login -u admin -p ******
+./rmap login -u admin -p ******
 
-$ ./rmap logout
+./rmap logout
 ```
 
 ### Security commands
 
+To search for a task
+
+```shell
+./rmap task search -k "check domain"
+```
+
+
 To search for a command to run
 
 ```shell
-$ ./rmap command search -k amass
+./rmap command search -k amass
 ```
 
 To execute a command once you know its arguments
 
 ```shell
-$ ./rmap command run -cid 2 -var Host=soki.com.ar
+./rmap command run -cid 2 -var Host=soki.com.ar
 ```
 
 (if you are using Docker containers with your commands you require the Docker engine with [API version 1.40](https://docs.docker.com/engine/api/v1.40/))
@@ -45,13 +52,13 @@ $ ./rmap command run -cid 2 -var Host=soki.com.ar
 
 ### Requirements
 
-- Golang 1.16+
+- Golang 1.17+
 - Make
 
 ### Compilation
 
 ```shell
-$ make
+make
 ```
 
 ## Troubleshooting

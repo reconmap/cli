@@ -19,7 +19,11 @@ import (
 )
 
 func UploadResults(command *api.Command, taskId int) error {
-	if len(strings.TrimSpace(command.OutputFileName)) == 0 {
+	return UploadCommandOutputUsingFileName(command.OutputFileName, taskId)
+}
+
+func UploadCommandOutputUsingFileName(outputFileName string, taskId int) error {
+	if len(strings.TrimSpace(outputFileName)) == 0 {
 		return errors.New("The command has not defined an output filename. Nothing has been uploaded to the server.")
 	}
 
@@ -30,7 +34,7 @@ func UploadResults(command *api.Command, taskId int) error {
 	var remoteURL string = config.ApiUrl + "/commands/outputs"
 
 	var client *http.Client = &http.Client{}
-	err = Upload(client, remoteURL, command.OutputFileName, taskId)
+	err = Upload(client, remoteURL, outputFileName, taskId)
 	return err
 }
 

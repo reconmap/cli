@@ -86,3 +86,41 @@ func GetCommandsByKeywords(keywords string) (*Commands, error) {
 
 	return commands, nil
 }
+
+func GetTasksByKeywords(keywords string) (*Tasks, error) {
+	config, err := configuration.ReadConfig()
+	if err != nil {
+		return nil, err
+	}
+	var apiUrl string = config.ApiUrl + "/tasks?keywords=" + keywords
+
+	client := &http.Client{}
+	req, err := httputils.NewRmapRequest("GET", apiUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	httputils.AddBearerToken(req)
+
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+
+	if response.StatusCode != http.StatusOK {
+		return nil, errors.New("error from server: " + string(response.Status))
+	}
+
+	if err != nil {
+		return nil, errors.New("Unable to read response from server")
+	}
+
+	var tasks *Tasks = &Tasks{}
+
+	json.Unmarshal(body, tasks)
+
+	return tasks, nil
+}
