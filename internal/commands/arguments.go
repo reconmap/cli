@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/reconmap/cli/internal/api"
@@ -77,11 +78,11 @@ var CommandArguments []*cli.Command = []*cli.Command{
 			{
 				Name:  "search",
 				Usage: "Search commands by keywords",
-				Flags: []cli.Flag{
-					&cli.StringFlag{Name: "keywords", Aliases: []string{"k"}, Required: true},
-				},
 				Action: func(c *cli.Context) error {
-					keywords := c.String("keywords")
+					if c.Args().Len() == 0 {
+						return errors.New("no keywords were entered after the search command")
+					}
+					var keywords string = strings.Join(c.Args().Slice(), " ")
 					commands, err := api.GetCommandsByKeywords(keywords)
 					if err != nil {
 						return err
