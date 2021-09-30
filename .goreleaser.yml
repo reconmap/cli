@@ -19,7 +19,7 @@ brews:
   - homepage: 'https://github.com/reconmap'
     description: 'Reconmap tools as homebrew tap.'
     folder: Formula
-    license: "GPL3"
+    license: "GPL-3.0"
     commit_author:
       name: Santiago Lizardo
       email: santiagolizardo@users.noreply.github.com
