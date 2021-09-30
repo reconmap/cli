@@ -15,6 +15,18 @@ builds:
       - windows
       - darwin
 
+brews:
+  - homepage: 'https://github.com/reconmap'
+    description: 'Reconmap tools as homebrew tap.'
+    folder: Formula
+    license: "GPL3"
+    commit_author:
+      name: Santiago Lizardo
+      email: santiagolizardo@users.noreply.github.com
+    tap:
+      owner: reconmap
+      name: homebrew-tap
+
 archives:
   - name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
     replacements:
