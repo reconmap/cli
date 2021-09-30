@@ -16,7 +16,8 @@ builds:
       - darwin
 
 brews:
-  - homepage: 'https://github.com/reconmap'
+  - name: rmap
+    homepage: 'https://github.com/reconmap'
     description: 'Reconmap tools as homebrew tap.'
     folder: Formula
     license: "GPL-3.0"
