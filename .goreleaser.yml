@@ -1,4 +1,4 @@
-project_name: reconmap-cli
+project_name: rmap
 
 before:
   hooks:
@@ -31,6 +31,8 @@ brews:
     tap:
       owner: reconmap
       name: homebrew-tap
+    install: |
+      bin.install "rmap"
 
 archives:
   - name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
