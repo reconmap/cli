@@ -22,6 +22,12 @@ jobs:
           go-version: 1.17
         id: go
 
+      - name:  Generate Software Bill of Materials
+        uses:  docker://spdx/spdx-sbom-generator
+        with:
+          args:
+            --path /github/workspace/
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2.7.0
         with:

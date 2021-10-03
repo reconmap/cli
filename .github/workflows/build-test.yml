@@ -29,3 +29,15 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name:  Generate Software Bill of Materials
+      uses:  docker://spdx/spdx-sbom-generator
+      with:
+        args:
+          --path /github/workspace/
+
+    - name: Create Snapshot
+      uses: goreleaser/goreleaser-action@v2.7.0
+      with:
+        version: latest
+        args: --snapshot --skip-publish --rm-dist

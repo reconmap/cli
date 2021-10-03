@@ -20,6 +20,12 @@ tests:
 clean:
 	rm -f $(PROGRAM)
 
+.PHONY: sbom
+sbom:
+	docker run -it --rm \
+    -v $(CURDIR):/reconmap/cli \
+    spdx/spdx-sbom-generator --path /reconmap/cli
+
 .PHONY: snapshot
-snapshot:
+snapshot: sbom
 	$(GORELEASER) --snapshot --skip-publish --rm-dist
