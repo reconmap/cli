@@ -1,4 +1,7 @@
 package build
 
-var BuildTime string
-var BuildVersion string
+var (
+	BuildTime    string
+	BuildVersion string
+	BuildCommit  string
+)

@@ -16,6 +16,10 @@ func main() {
 	logger := logging.GetLoggerInstance()
 	defer logger.Sync()
 
+	cli.VersionPrinter = func(c *cli.Context) {
+		fmt.Printf("Version=%s\nBuildDate=%s\nGitCommit=%s\n", c.App.Version, build.BuildTime, build.BuildCommit)
+	}
+
 	app := cli.NewApp()
 	app.Flags = []cli.Flag{
 		&cli.BoolFlag{
