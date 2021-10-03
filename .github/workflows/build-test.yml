@@ -33,7 +33,7 @@ jobs:
     - name: Generate sbom
       run: |
         wget -qO- "https://github.com/spdx/spdx-sbom-generator/releases/download/v0.0.13/spdx-sbom-generator-v0.0.13-linux-amd64.tar.gz" | \
-        tar xvz --wildcards --directory='/usr/bin/' --strip-components=1 '*/spdx-sbom-generator'  && \
+        tar xvz --directory='/usr/bin/' && \
         chmod +x /usr/bin/spdx-sbom-generator
       shell: bash
 
