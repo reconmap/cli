@@ -31,6 +31,10 @@ builds:
     flags:
     - -trimpath
 
+release:
+  extra_files:
+    - glob: bom-go-mod.spdx
+
 brews:
   - name: rmap
     homepage: 'https://github.com/reconmap'

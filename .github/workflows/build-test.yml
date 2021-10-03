@@ -29,3 +29,17 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name: Generate sbom
+      run: |
+        wget -qO- "https://github.com/spdx/spdx-sbom-generator/releases/download/v0.0.13/spdx-sbom-generator-v0.0.13-linux-amd64.tar.gz" | \
+        tar xvz && \
+        chmod +x spdx-sbom-generator
+        ./spdx-sbom-generator --path .
+      shell: bash
+
+    - name: Create Snapshot
+      uses: goreleaser/goreleaser-action@v2.7.0
+      with:
+        version: latest
+        args: --snapshot --skip-publish --rm-dist

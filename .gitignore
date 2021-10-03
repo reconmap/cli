@@ -6,3 +6,4 @@ rmap-session
 *.xml
 *.log
 tags
+bom-go-mod.spdx
