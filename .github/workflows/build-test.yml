@@ -29,7 +29,9 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-
+  validate:
+    runs-on: ubuntu-latest
+    steps:
     - name:  Generate Software Bill of Materials
       uses:  docker://spdx/spdx-sbom-generator
       with:
