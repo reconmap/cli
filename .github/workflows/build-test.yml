@@ -29,15 +29,15 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-    - name:  Generate Software Bill of Materials
-      uses:  docker://spdx/spdx-sbom-generator
-      with:
-        args:
-          --path .
 
+    - name: Generate sbom
+      run: |
+        wget -qO- "https://github.com/spdx/spdx-sbom-generator/releases/download/v0.0.13/spdx-sbom-generator-v0.0.13-linux-amd64.tar.gz" | \
+        ar xvz --wildcards --directory='/usr/bin/' --strip-components=1 '*/spdx-sbom-generator'  && \
+        chmod +x /usr/bin/spdx-sbom-generator
+      shell: bash
+
+  Validate:
     - name: Create Snapshot
       uses: goreleaser/goreleaser-action@v2.7.0
       with:
