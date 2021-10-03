@@ -5,6 +5,7 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 LATEST_TAG = $(shell git describe --tags)
+GORELEASER := goreleaser
 
 PROGRAM=rmap
 
@@ -19,3 +20,6 @@ tests:
 clean:
 	rm -f $(PROGRAM)
 
+.PHONY: snapshot
+snapshot:
+	$(GORELEASER) --snapshot --skip-publish --rm-dist
