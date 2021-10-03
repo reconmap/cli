@@ -36,8 +36,7 @@ jobs:
         ar xvz --wildcards --directory='/usr/bin/' --strip-components=1 '*/spdx-sbom-generator'  && \
         chmod +x /usr/bin/spdx-sbom-generator
       shell: bash
-
-  Validate:
+      
     - name: Create Snapshot
       uses: goreleaser/goreleaser-action@v2.7.0
       with:
