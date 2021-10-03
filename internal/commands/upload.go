@@ -45,7 +45,11 @@ func Upload(client *http.Client, url string, outputFileName string, taskId int) 
 	}
 
 	file, err := os.Open(filepath.Clean(outputFileName))
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)

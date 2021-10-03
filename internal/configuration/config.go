@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -53,7 +54,12 @@ func ReadConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer jsonFile.Close()
+
+	defer func() {
+		if err := jsonFile.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	bytes, _ := ioutil.ReadAll(jsonFile)
 
