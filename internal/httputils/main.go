@@ -39,7 +39,7 @@ func ReadSessionToken() (string, error) {
 
 	var configPath = filepath.Join(reconmapConfigDir, "session-token")
 
-	b, err := ioutil.ReadFile(configPath)
+	b, err := ioutil.ReadFile(filepath.Clean(configPath))
 	if err != nil {
 		return "", err
 	}

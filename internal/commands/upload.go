@@ -44,7 +44,7 @@ func Upload(client *http.Client, url string, outputFileName string, taskId int) 
 		return fmt.Errorf("Output file '%s' could not be found", outputFileName)
 	}
 
-	file, err := os.Open(outputFileName)
+	file, err := os.Open(filepath.Clean(outputFileName))
 	defer file.Close()
 
 	body := &bytes.Buffer{}

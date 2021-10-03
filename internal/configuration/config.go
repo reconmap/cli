@@ -49,7 +49,7 @@ func ReadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	jsonFile, err := os.Open(path)
+	jsonFile, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
