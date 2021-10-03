@@ -24,6 +24,7 @@ clean:
 sbom:
 	docker run -it --rm \
     -v $(CURDIR):/reconmap/cli \
+	-w /reconmap/cli \
     spdx/spdx-sbom-generator --path /reconmap/cli
 
 .PHONY: snapshot

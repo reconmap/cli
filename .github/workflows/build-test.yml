@@ -36,7 +36,6 @@ jobs:
         tar xvz && \
         chmod +x spdx-sbom-generator
         ./spdx-sbom-generator --path .
-
       shell: bash
 
     - name: Create Snapshot
