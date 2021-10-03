@@ -44,24 +44,35 @@ func Upload(client *http.Client, url string, outputFileName string, taskId int) 
 		return fmt.Errorf("Output file '%s' could not be found", outputFileName)
 	}
 
-	file, err := os.Open(outputFileName)
-	defer file.Close()
+	file, err := os.Open(filepath.Clean(outputFileName))
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("resultFile", filepath.Base(outputFileName))
 	_, err = io.Copy(part, file)
 
-	writer.WriteField("taskId", strconv.Itoa(taskId))
+	if err = writer.WriteField("taskId", strconv.Itoa(taskId)); err != nil {
+		return
+	}
 
-	writer.Close()
+	if err = writer.Close(); err != nil {
+		return
+	}
 
 	req, err := httputils.NewRmapRequest("POST", url, body)
 	if err != nil {
 		return
 	}
 
-	httputils.AddBearerToken(req)
+	err = httputils.AddBearerToken(req)
+	if err != nil {
+		return
+	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 

@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -27,13 +28,15 @@ func SaveConfig(config Config) (string, error) {
 	var reconmapConfigDir, err = GetReconmapConfigDirectory()
 
 	if _, err := os.Stat(reconmapConfigDir); os.IsNotExist(err) {
-		os.MkdirAll(reconmapConfigDir, os.ModePerm)
+		if err := os.MkdirAll(reconmapConfigDir, os.ModePerm); err != nil {
+			return "", err
+		}
 	}
 
 	jsondata, _ := json.MarshalIndent(config, "", " ")
 
 	filepath := filepath.Join(reconmapConfigDir, configFileName)
-	err = ioutil.WriteFile(filepath, jsondata, 400)
+	err = ioutil.WriteFile(filepath, jsondata, 0400)
 
 	return filepath, err
 }
@@ -49,11 +52,16 @@ func ReadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	jsonFile, err := os.Open(path)
+	jsonFile, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
-	defer jsonFile.Close()
+
+	defer func() {
+		if err := jsonFile.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	bytes, _ := ioutil.ReadAll(jsonFile)
 

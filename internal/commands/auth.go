@@ -54,7 +54,9 @@ func Login(username string, password string) error {
 
 	var loginResponse api.LoginResponse
 
-	json.Unmarshal([]byte(body), &loginResponse)
+	if err = json.Unmarshal([]byte(body), &loginResponse); err != nil {
+		return err
+	}
 
 	err = httputils.SaveSessionToken(loginResponse.AccessToken)
 	if err == nil {
@@ -76,8 +78,15 @@ func Logout() error {
 
 	client := &http.Client{}
 	req, err := httputils.NewRmapRequest("POST", apiUrl, strings.NewReader(formData.Encode()))
+	if err != nil {
+		return err
+	}
+
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	httputils.AddBearerToken(req)
+	if err = httputils.AddBearerToken(req); err != nil {
+		return err
+	}
+
 	response, err := client.Do(req)
 	if err != nil {
 		return err
@@ -101,7 +110,9 @@ func Logout() error {
 
 	var loginResponse api.LoginResponse
 
-	json.Unmarshal([]byte(body), &loginResponse)
+	if err = json.Unmarshal([]byte(body), &loginResponse); err != nil {
+		return err
+	}
 
 	configPath, err := httputils.GetSessionTokenPath()
 

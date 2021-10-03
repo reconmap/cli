@@ -24,7 +24,9 @@ func GetCommandById(id int) (*Command, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	httputils.AddBearerToken(req)
+	if err = httputils.AddBearerToken(req); err != nil {
+		return nil, err
+	}
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -44,7 +46,9 @@ func GetCommandById(id int) (*Command, error) {
 
 	var command *Command = &Command{}
 
-	json.Unmarshal([]byte(body), command)
+	if err = json.Unmarshal([]byte(body), command); err != nil {
+		return command, err
+	}
 
 	return command, nil
 }
@@ -62,7 +66,9 @@ func GetCommandsByKeywords(keywords string) (*Commands, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	httputils.AddBearerToken(req)
+	if err = httputils.AddBearerToken(req); err != nil {
+		return nil, err
+	}
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -82,7 +88,9 @@ func GetCommandsByKeywords(keywords string) (*Commands, error) {
 
 	var commands *Commands = &Commands{}
 
-	json.Unmarshal(body, commands)
+	if err = json.Unmarshal(body, commands); err != nil {
+		return commands, err
+	}
 
 	return commands, nil
 }
@@ -100,7 +108,9 @@ func GetTasksByKeywords(keywords string) (*Tasks, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	httputils.AddBearerToken(req)
+	if err = httputils.AddBearerToken(req); err != nil {
+		return nil, err
+	}
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -120,7 +130,9 @@ func GetTasksByKeywords(keywords string) (*Tasks, error) {
 
 	var tasks *Tasks = &Tasks{}
 
-	json.Unmarshal(body, tasks)
+	if err = json.Unmarshal(body, tasks); err != nil {
+		return tasks, err
+	}
 
 	return tasks, nil
 }
