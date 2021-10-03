@@ -32,9 +32,6 @@ jobs:
 
     - name:  Generate Software Bill of Materials
       uses:  docker://spdx/spdx-sbom-generator
-      with:
-        args:
-          --path /github/workspace/
 
     - name: Create Snapshot
       uses: goreleaser/goreleaser-action@v2.7.0
