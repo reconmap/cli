@@ -5,3 +5,4 @@ dist
 rmap-session
 *.xml
 *.log
+tags
