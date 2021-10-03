@@ -56,16 +56,23 @@ func Upload(client *http.Client, url string, outputFileName string, taskId int) 
 	part, err := writer.CreateFormFile("resultFile", filepath.Base(outputFileName))
 	_, err = io.Copy(part, file)
 
-	writer.WriteField("taskId", strconv.Itoa(taskId))
+	if err = writer.WriteField("taskId", strconv.Itoa(taskId)); err != nil {
+		return
+	}
 
-	writer.Close()
+	if err = writer.Close(); err != nil {
+		return
+	}
 
 	req, err := httputils.NewRmapRequest("POST", url, body)
 	if err != nil {
 		return
 	}
 
-	httputils.AddBearerToken(req)
+	err = httputils.AddBearerToken(req)
+	if err != nil {
+		return
+	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 

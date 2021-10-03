@@ -45,7 +45,9 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 		panic(err)
 	}
 	buf := bytes.NewBufferString("")
-	io.Copy(buf, reader)
+	if _, err = io.Copy(buf, reader); err != nil {
+		return "", err
+	}
 	fmt.Println(buf.String())
 
 	commandLineArgs := strings.Split(updatedArgs, " ")
@@ -66,7 +68,9 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 		for _, container := range containers {
 			var timeout time.Duration = 5 * time.Second
 			fmt.Printf("Container ID: %s, %s\n", container.Image, container.ID)
-			cli.ContainerStop(bgContext, container.ID, &timeout)
+			if err = cli.ContainerStop(bgContext, container.ID, &timeout); err != nil {
+				return "", err
+			}
 			err = cli.ContainerRemove(bgContext, container.ID, types.ContainerRemoveOptions{})
 			if err != nil {
 				return "", err
@@ -121,7 +125,9 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+	if _, err = stdcopy.StdCopy(os.Stdout, os.Stderr, reader); err != nil {
+		return "", err
+	}
 
 	terminal.PrintYellowDot()
 	fmt.Printf(" Starting container.\n")
@@ -131,7 +137,9 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 
 	go func() {
 		defer resp.Close()
-		io.Copy(os.Stdout, resp.Reader)
+		if _, err = io.Copy(os.Stdout, resp.Reader); err != nil {
+			fmt.Printf("Error logging response: %s\n", err)
+		}
 	}()
 
 	terminal.PrintYellowDot()
@@ -147,7 +155,9 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 		fmt.Printf(" Container '%s' exited with code %d.\n", command.DockerImage, status.StatusCode)
 	}
 
-	stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+	if _, err = stdcopy.StdCopy(os.Stdout, os.Stderr, reader); err != nil {
+		return "", err
+	}
 
 	terminal.PrintGreenTick()
 	fmt.Printf(" Done\n")

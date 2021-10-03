@@ -28,7 +28,9 @@ func SaveConfig(config Config) (string, error) {
 	var reconmapConfigDir, err = GetReconmapConfigDirectory()
 
 	if _, err := os.Stat(reconmapConfigDir); os.IsNotExist(err) {
-		os.MkdirAll(reconmapConfigDir, os.ModePerm)
+		if err := os.MkdirAll(reconmapConfigDir, os.ModePerm); err != nil {
+			return "", err
+		}
 	}
 
 	jsondata, _ := json.MarshalIndent(config, "", " ")
