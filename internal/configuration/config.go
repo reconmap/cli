@@ -33,7 +33,7 @@ func SaveConfig(config Config) (string, error) {
 	jsondata, _ := json.MarshalIndent(config, "", " ")
 
 	filepath := filepath.Join(reconmapConfigDir, configFileName)
-	err = ioutil.WriteFile(filepath, jsondata, 400)
+	err = ioutil.WriteFile(filepath, jsondata, 0400)
 
 	return filepath, err
 }
