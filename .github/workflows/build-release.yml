@@ -28,6 +28,7 @@ jobs:
           tar xvz && \
           chmod +x spdx-sbom-generator
           ./spdx-sbom-generator --path .
+          rm spdx-sbom-generator
         shell: bash
 
       - name: Run GoReleaser
