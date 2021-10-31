@@ -37,8 +37,8 @@ release:
 
 brews:
   - name: rmap
-    homepage: 'https://github.com/reconmap'
-    description: 'Reconmap tools as homebrew tap.'
+    homepage: 'https://github.com/reconmap/cli'
+    description: 'Rmap: Command line interface for the Reconmap pentest automation and reporting tool.'
     folder: Formula
     license: "GPL-3.0"
     commit_author:
