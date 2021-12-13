@@ -193,6 +193,45 @@ var CommandArguments []*cli.Command = []*cli.Command{
 		},
 	},
 	{
+		Name:    "vulnerability",
+		Aliases: []string{"vuln"},
+		Usage:   "Works with vulnerabilities",
+		Before:  preActionChecks,
+		Subcommands: []*cli.Command{
+			{
+				Name:  "list",
+				Usage: "List open vulnerabilities",
+				Action: func(c *cli.Context) error {
+					vulnerabilities, err := api.GetVulnerabilities()
+					if err != nil {
+						return err
+					}
+
+					var numVulnerabilities int = len(*vulnerabilities)
+					fmt.Printf("%d vulnerabilities\n", numVulnerabilities)
+
+					if numVulnerabilities > 0 {
+						fmt.Println()
+
+						headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+						columnFmt := color.New(color.FgYellow).SprintfFunc()
+
+						tbl := table.New("ID", "Summary", "Risk", "Status", "Category")
+						tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+						for _, vuln := range *vulnerabilities {
+							tbl.AddRow(vuln.ID, vuln.Summary, vuln.Risk, vuln.Status, vuln.CategoryName)
+
+						}
+						tbl.Print()
+					}
+
+					return err
+				},
+			},
+		},
+	},
+	{
 		Name:    "debug",
 		Aliases: []string{"dbg"},
 		Usage:   "Shows debugging info",

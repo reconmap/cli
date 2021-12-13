@@ -28,8 +28,11 @@ type Task struct {
 type Tasks []Task
 
 type Vulnerability struct {
-	ID      int    `json:"id"`
-	Summary string `json:"summary"`
-	Status  string `json:"status"`
-	Risk    string `json:"risk"`
+	ID           int    `json:"id"`
+	Summary      string `json:"summary"`
+	Status       string `json:"status"`
+	Risk         string `json:"risk"`
+	CategoryName string `json:"category_name"`
 }
+
+type Vulnerabilities []Vulnerability
