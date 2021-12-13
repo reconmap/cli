@@ -27,6 +27,10 @@ sbom:
 	-w /reconmap/cli \
 	spdx/spdx-sbom-generator --path /reconmap/cli
 
+.PHONY: update-deps
+update-deps:
+	go get -u ./...
+
 .PHONY: snapshot
 snapshot: sbom
 	$(GORELEASER) --snapshot --skip-publish --rm-dist
