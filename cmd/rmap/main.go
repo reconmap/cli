@@ -48,7 +48,7 @@ func main() {
 			Name: "Reconmap (https://github.com/reconmap)",
 		},
 	}
-	app.Commands = commands.CommandArguments
+	app.Commands = commands.CommandList
 
 	err := app.Run(os.Args)
 	if err != nil {

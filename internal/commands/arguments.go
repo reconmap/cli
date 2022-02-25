@@ -21,7 +21,7 @@ func preActionChecks(c *cli.Context) error {
 	return nil
 }
 
-var CommandArguments []*cli.Command = []*cli.Command{
+var CommandList []*cli.Command = []*cli.Command{
 	{
 		Name:  "login",
 		Usage: "Initiates session with the server",
@@ -92,7 +92,7 @@ var CommandArguments []*cli.Command = []*cli.Command{
 	{
 		Name:    "command",
 		Aliases: []string{"cmd"},
-		Usage:   "Works with commands",
+		Usage:   "Search and run commands",
 		Before:  preActionChecks,
 		Subcommands: []*cli.Command{
 			{
@@ -170,10 +170,9 @@ var CommandArguments []*cli.Command = []*cli.Command{
 		},
 	},
 	{
-		Name:    "task",
-		Aliases: []string{"tsk"},
-		Usage:   "Lists tasks",
-		Before:  preActionChecks,
+		Name:   "task",
+		Usage:  "Search and update tasks",
+		Before: preActionChecks,
 		Subcommands: []*cli.Command{
 			{
 				Name:  "search",
