@@ -40,12 +40,12 @@ func main() {
 		return nil
 	}
 	app.Version = build.BuildVersion
-	app.Copyright = "GNU General Public License v3.0"
+	app.Copyright = "Apache License v2.0"
 	app.Usage = "Reconmap's CLI"
 	app.Description = "Reconmap's command line interface"
 	app.Authors = []*cli.Author{
 		{
-			Name: "Reconmap (https://reconmap.org)",
+			Name: "Reconmap (https://github.com/reconmap)",
 		},
 	}
 	app.Commands = commands.CommandArguments

@@ -16,7 +16,7 @@ import (
 
 func preActionChecks(c *cli.Context) error {
 	if !configuration.HasConfig() {
-		return errors.New("Rmap has not been configured. Please call the 'rmap configure' command first.")
+		return errors.New("Rmap has not been configured. Please call the 'rmap config' command first.")
 	}
 	return nil
 }
@@ -58,15 +58,35 @@ var CommandArguments []*cli.Command = []*cli.Command{
 		},
 	},
 	{
-		Name:    "config",
-		Aliases: []string{"cnf"},
+		Name:    "configure",
+		Aliases: []string{"config"},
 		Usage:   "Configures server settings",
-		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "api-url", Aliases: []string{"url"}, Required: true},
-		},
-		Action: func(c *cli.Context) error {
-			err := Configure(c.String("api-url"))
-			return err
+		Subcommands: []*cli.Command{
+			{
+				Name:  "set",
+				Usage: "Configures server settings",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "api-url", Required: true},
+				},
+				Action: func(c *cli.Context) error {
+					err := Configure(c.String("api-url"))
+					return err
+				},
+			},
+			{
+				Name:  "view",
+				Usage: "View server settings",
+				Action: func(c *cli.Context) error {
+					if configuration.HasConfig() {
+						config, err := configuration.ReadConfig()
+						if err != nil {
+							return err
+						}
+						fmt.Printf("api-url: %s\n", config.ApiUrl)
+					}
+					return nil
+				},
+			},
 		},
 	},
 	{
