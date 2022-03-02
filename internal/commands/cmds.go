@@ -1,16 +1,19 @@
 package commands
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/cli/internal/terminal"
 )
+
+// replace with https://blog.kowalczyk.info/article/wOYk/advanced-command-execution-in-go-with-osexec.html
 
 func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
 	var out []byte
@@ -38,8 +41,9 @@ func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
 func RunCommand(command *api.Command, vars []string) error {
 	var err error
 	if command.ExecutableType == "custom" {
-		println("Command to run: " + command.ExecutablePath + " " + command.ContainerArgs)
-		cmd := exec.Command(command.ExecutablePath, strings.Fields(command.ContainerArgs)...)
+		argsRendered := terminal.ReplaceArgs(command, vars)
+		println("Command to run: " + command.ExecutablePath + " " + argsRendered)
+		cmd := exec.Command(command.ExecutablePath, strings.Fields(argsRendered)...)
 		var stdout, stderr []byte
 		var errStdout, errStderr error
 		stdoutIn, _ := cmd.StdoutPipe()
@@ -67,7 +71,16 @@ func RunCommand(command *api.Command, vars []string) error {
 			log.Fatal("failed to capture stdout or stderr\n")
 		}
 		outStr, errStr := string(stdout), string(stderr)
-		fmt.Printf("\nout:\n%s\nerr:\n%s\n", outStr, errStr)
+
+		outputFilename := strconv.Itoa(command.ID) + ".out"
+		f, err := os.Create(outputFilename)
+		defer f.Close()
+		f.WriteString(outStr)
+		command.OutputFileName = outputFilename
+
+		if len(errStr) > 0 {
+			log.Println(errStr)
+		}
 	} else {
 		_, err = CreateNewContainer(command, vars)
 	}

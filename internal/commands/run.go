@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -27,12 +26,7 @@ func CreateNewContainer(command *api.Command, vars []string) (string, error) {
 		return "", err
 	}
 
-	var updatedArgs = command.ContainerArgs
-	for _, v := range vars {
-		var tokens = strings.Split(v, "=")
-		var validID = regexp.MustCompile("{{{" + tokens[0] + ".*?}}}")
-		updatedArgs = validID.ReplaceAllString(updatedArgs, tokens[1])
-	}
+	var updatedArgs = terminal.ReplaceArgs(command, vars)
 
 	currentDir, err := os.Getwd()
 
