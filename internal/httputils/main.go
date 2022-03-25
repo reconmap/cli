@@ -4,6 +4,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -32,6 +33,11 @@ func AddBearerToken(req *http.Request) error {
 }
 
 func ReadSessionToken() (string, error) {
+	sessionTokenEnv, envVariableFound := os.LookupEnv("RMAP_SESSION_TOKEN")
+	if envVariableFound {
+		return sessionTokenEnv, nil
+	}
+
 	reconmapConfigDir, err := configuration.GetReconmapConfigDirectory()
 	if err != nil {
 		return "", err
