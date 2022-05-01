@@ -19,11 +19,11 @@ import (
 )
 
 func UploadResults(command *api.Command, taskId int) error {
-	return UploadCommandOutputUsingFileName(command.OutputFileName, taskId)
+	return UploadCommandOutputUsingFileName(command, taskId)
 }
 
-func UploadCommandOutputUsingFileName(outputFileName string, taskId int) error {
-	if len(strings.TrimSpace(outputFileName)) == 0 {
+func UploadCommandOutputUsingFileName(command *api.Command, taskId int) error {
+	if len(strings.TrimSpace(command.OutputFileName)) == 0 {
 		return errors.New("The command has not defined an output filename. Nothing has been uploaded to the server.")
 	}
 
@@ -34,11 +34,11 @@ func UploadCommandOutputUsingFileName(outputFileName string, taskId int) error {
 	var remoteURL string = config.ApiUrl + "/commands/outputs"
 
 	var client *http.Client = &http.Client{}
-	err = Upload(client, remoteURL, outputFileName, taskId)
+	err = Upload(client, remoteURL, command.OutputFileName, command.ID, taskId)
 	return err
 }
 
-func Upload(client *http.Client, url string, outputFileName string, taskId int) (err error) {
+func Upload(client *http.Client, url string, outputFileName string, commandId int, taskId int) (err error) {
 
 	if _, err := os.Stat(outputFileName); os.IsNotExist(err) {
 		return fmt.Errorf("Output file '%s' could not be found", outputFileName)
@@ -56,8 +56,13 @@ func Upload(client *http.Client, url string, outputFileName string, taskId int) 
 	part, err := writer.CreateFormFile("resultFile", filepath.Base(outputFileName))
 	_, err = io.Copy(part, file)
 
-	if err = writer.WriteField("taskId", strconv.Itoa(taskId)); err != nil {
+	if err = writer.WriteField("commandId", strconv.Itoa(commandId)); err != nil {
 		return
+	}
+	if taskId != 0 {
+		if err = writer.WriteField("taskId", strconv.Itoa(taskId)); err != nil {
+			return
+		}
 	}
 
 	if err = writer.Close(); err != nil {

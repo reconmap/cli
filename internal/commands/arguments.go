@@ -153,20 +153,6 @@ var CommandList []*cli.Command = []*cli.Command{
 					return err
 				},
 			},
-			{
-				Name:  "upload-output",
-				Usage: "Upload command output to server",
-				Flags: []cli.Flag{
-					&cli.IntFlag{Name: "taskId", Aliases: []string{"tid"}, Required: true},
-					&cli.StringFlag{Name: "outputFile", Aliases: []string{"of"}, Required: true},
-				},
-				Action: func(c *cli.Context) error {
-					taskId := c.Int("taskId")
-					outputFileName := c.String("outputFile")
-
-					return UploadCommandOutputUsingFileName(outputFileName, taskId)
-				},
-			},
 		},
 	},
 	{

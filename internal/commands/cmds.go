@@ -42,7 +42,8 @@ func RunCommand(command *api.Command, vars []string) error {
 	var err error
 	if command.ExecutableType == "custom" {
 		argsRendered := terminal.ReplaceArgs(command, vars)
-		println("Command to run: " + command.ExecutablePath + " " + argsRendered)
+		log.Println("Command to run: " + command.ExecutablePath + " " + argsRendered)
+
 		cmd := exec.Command(command.ExecutablePath, strings.Fields(argsRendered)...)
 		var stdout, stderr []byte
 		var errStdout, errStderr error
