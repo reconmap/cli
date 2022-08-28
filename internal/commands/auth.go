@@ -2,6 +2,8 @@ package commands
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,28 +12,85 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/coreos/go-oidc"
 	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/configuration"
 	"github.com/reconmap/cli/internal/httputils"
 	"github.com/reconmap/cli/internal/terminal"
+	"golang.org/x/oauth2"
 )
+
+type IDTokenClaim struct {
+	Email string `json:"email"`
+}
 
 func Login(username string, password string) error {
 	config, err := configuration.ReadConfig()
 	if err != nil {
 		return err
 	}
+
+	provider, err := oidc.NewProvider(oauth2.NoContext, "http://localhost:8080/realms/reconmap")
+	if err != nil {
+		panic(err)
+	}
+
+	oauthConfig := oauth2.Config{
+		ClientID:    "admin-cli",
+		RedirectURL: "urn:ietf:wg:oauth:2.0:oob",
+		Endpoint:    provider.Endpoint(),
+		Scopes:      []string{oidc.ScopeOpenID, "email"},
+	}
+
+	var stateSeed uint64
+	binary.Read(rand.Reader, binary.LittleEndian, &stateSeed)
+	state := fmt.Sprintf("%x", stateSeed)
+
+	authCodeURL := oauthConfig.AuthCodeURL(state)
+	fmt.Printf("Open %s\n", authCodeURL)
+	fmt.Println()
+
+	fmt.Printf("Enter authorization code: ")
+	var code string
+	if _, err := fmt.Scanln(&code); err != nil {
+		panic(err)
+	}
+
+	fmt.Println()
+	fmt.Printf("You entered code: \"%s\"\n", code)
+
+	token, err := oauthConfig.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(token.AccessToken)
+
+	rawIDToken, ok := token.Extra("id_token").(string)
+	if !ok {
+		panic("id_token is missing")
+	}
+
+	verifier := provider.Verifier(&oidc.Config{ClientID: oauthConfig.ClientID})
+	idToken, err := verifier.Verify(oauth2.NoContext, rawIDToken)
+	if err != nil {
+		panic(err)
+	}
+
+	idTokenClaim := IDTokenClaim{}
+	if err := idToken.Claims(&idTokenClaim); err != nil {
+		panic(err)
+	}
+	fmt.Printf("You are %s (%s)", idTokenClaim.Email, idToken.Subject)
+
 	var apiUrl string = config.ApiUrl + "/users/login"
 
-	formData := map[string]string{
-		"username": username,
-		"password": password,
-	}
+	formData := map[string]string{}
 	jsonData, err := json.Marshal(formData)
 
 	client := &http.Client{}
 	req, err := httputils.NewRmapRequest("POST", apiUrl, bytes.NewBuffer(jsonData))
 	req.Header.Add("Content-Type", "application/json")
+	httputils.AddBearerToken(req)
 	response, err := client.Do(req)
 	if err != nil {
 		return err
@@ -63,7 +122,7 @@ func Login(username string, password string) error {
 		return err
 	}
 
-	err = httputils.SaveSessionToken(loginResponse.AccessToken)
+	err = httputils.SaveSessionToken(token.AccessToken)
 	if err == nil {
 		terminal.PrintGreenTick()
 		fmt.Printf(" Successfully logged in as '%s'\n", username)
