@@ -9,7 +9,8 @@ import (
 )
 
 type Config struct {
-	ApiUrl string `json:"api-url"`
+	AuthUrl string `json:"auth-url"`
+	ApiUrl  string `json:"api-url"`
 }
 
 const configFileName = "config.json"
