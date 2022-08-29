@@ -3,7 +3,6 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/fatih/color"
@@ -11,7 +10,6 @@ import (
 	"github.com/reconmap/cli/internal/configuration"
 	"github.com/rodaine/table"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/term"
 )
 
 func preActionChecks(c *cli.Context) error {
@@ -23,27 +21,12 @@ func preActionChecks(c *cli.Context) error {
 
 var CommandList []*cli.Command = []*cli.Command{
 	{
-		Name:  "login",
-		Usage: "Initiates session with the server",
-		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Required: true},
-			&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Required: false},
-		},
+		Name:   "login",
+		Usage:  "Initiates session with the server",
+		Flags:  []cli.Flag{},
 		Before: preActionChecks,
 		Action: func(c *cli.Context) error {
-			var password string
-			if c.IsSet("password") {
-				password = c.String("password")
-			} else {
-				fmt.Print("Password: ")
-				passwordBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
-				if err != nil {
-					return err
-				}
-				password = string(passwordBytes)
-				println()
-			}
-			err := Login(c.String("username"), password)
+			err := Login()
 			return err
 		},
 	},
@@ -66,10 +49,11 @@ var CommandList []*cli.Command = []*cli.Command{
 				Name:  "set",
 				Usage: "Configures server settings",
 				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "auth-url", Required: true},
 					&cli.StringFlag{Name: "api-url", Required: true},
 				},
 				Action: func(c *cli.Context) error {
-					err := Configure(c.String("api-url"))
+					err := Configure(c.String("auth-url"), c.String("api-url"))
 					return err
 				},
 			},

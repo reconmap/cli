@@ -24,19 +24,19 @@ type IDTokenClaim struct {
 	Email string `json:"email"`
 }
 
-func Login(username string, password string) error {
+func Login() error {
 	config, err := configuration.ReadConfig()
 	if err != nil {
 		return err
 	}
 
-	provider, err := oidc.NewProvider(oauth2.NoContext, "http://localhost:8080/realms/reconmap")
+	provider, err := oidc.NewProvider(oauth2.NoContext, config.AuthUrl+"/realms/reconmap")
 	if err != nil {
 		panic(err)
 	}
 
 	oauthConfig := oauth2.Config{
-		ClientID:    "admin-cli",
+		ClientID:    "web-client",
 		RedirectURL: "urn:ietf:wg:oauth:2.0:oob",
 		Endpoint:    provider.Endpoint(),
 		Scopes:      []string{oidc.ScopeOpenID, "email"},
@@ -56,14 +56,12 @@ func Login(username string, password string) error {
 		panic(err)
 	}
 
-	fmt.Println()
-	fmt.Printf("You entered code: \"%s\"\n", code)
-
 	token, err := oauthConfig.Exchange(oauth2.NoContext, code)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(token.AccessToken)
+
+	err = httputils.SaveSessionToken(token.AccessToken)
 
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
@@ -80,7 +78,6 @@ func Login(username string, password string) error {
 	if err := idToken.Claims(&idTokenClaim); err != nil {
 		panic(err)
 	}
-	fmt.Printf("You are %s (%s)", idTokenClaim.Email, idToken.Subject)
 
 	var apiUrl string = config.ApiUrl + "/users/login"
 
@@ -122,10 +119,9 @@ func Login(username string, password string) error {
 		return err
 	}
 
-	err = httputils.SaveSessionToken(token.AccessToken)
 	if err == nil {
 		terminal.PrintGreenTick()
-		fmt.Printf(" Successfully logged in as '%s'\n", username)
+		fmt.Printf(" Successfully logged in as '%s'\n", idTokenClaim.Email)
 	}
 
 	return err

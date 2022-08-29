@@ -7,8 +7,8 @@ import (
 	"github.com/reconmap/cli/internal/terminal"
 )
 
-func Configure(apiUrl string) error {
-	config := configuration.Config{ApiUrl: apiUrl}
+func Configure(authUrl string, apiUrl string) error {
+	config := configuration.Config{AuthUrl: authUrl, ApiUrl: apiUrl}
 
 	filepath, err := configuration.SaveConfig(config)
 
