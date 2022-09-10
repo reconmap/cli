@@ -53,7 +53,7 @@ To execute a command once you know its arguments
 
 ### Requirements
 
-- Golang 1.17+
+- Golang 1.18+
 - Make
 
 ### Compilation

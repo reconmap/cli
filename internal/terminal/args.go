@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/reconmap/cli/internal/api"
+	"github.com/reconmap/shared-lib/pkg/api"
 )
 
 func ReplaceArgs(command *api.Command, vars []string) string {

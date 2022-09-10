@@ -14,9 +14,9 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/containers"
 	"github.com/reconmap/cli/internal/terminal"
+	"github.com/reconmap/shared-lib/pkg/api"
 )
 
 // CreateNewContainer creates and starts a new container

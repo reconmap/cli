@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 
-	"github.com/reconmap/cli/internal/configuration"
 	"github.com/reconmap/cli/internal/terminal"
+	"github.com/reconmap/shared-lib/pkg/configuration"
 )
 
 func Configure(authUrl string, apiUrl string) error {

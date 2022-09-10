@@ -12,10 +12,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/reconmap/cli/internal/api"
-	"github.com/reconmap/cli/internal/configuration"
-	"github.com/reconmap/cli/internal/httputils"
 	"github.com/reconmap/cli/internal/terminal"
+	"github.com/reconmap/shared-lib/pkg/api"
+	"github.com/reconmap/shared-lib/pkg/configuration"
 )
 
 func UploadResults(command *api.Command, taskId int) error {
@@ -69,12 +68,12 @@ func Upload(client *http.Client, url string, outputFileName string, commandId in
 		return
 	}
 
-	req, err := httputils.NewRmapRequest("POST", url, body)
+	req, err := api.NewRmapRequest("POST", url, body)
 	if err != nil {
 		return
 	}
 
-	err = httputils.AddBearerToken(req)
+	err = api.AddBearerToken(req)
 	if err != nil {
 		return
 	}

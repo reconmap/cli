@@ -13,10 +13,9 @@ import (
 	"os"
 
 	"github.com/coreos/go-oidc"
-	"github.com/reconmap/cli/internal/api"
-	"github.com/reconmap/cli/internal/configuration"
-	"github.com/reconmap/cli/internal/httputils"
 	"github.com/reconmap/cli/internal/terminal"
+	"github.com/reconmap/shared-lib/pkg/api"
+	"github.com/reconmap/shared-lib/pkg/configuration"
 	"golang.org/x/oauth2"
 )
 
@@ -61,7 +60,7 @@ func Login() error {
 		panic(err)
 	}
 
-	err = httputils.SaveSessionToken(token.AccessToken)
+	err = api.SaveSessionToken(token.AccessToken)
 
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
@@ -85,9 +84,9 @@ func Login() error {
 	jsonData, err := json.Marshal(formData)
 
 	client := &http.Client{}
-	req, err := httputils.NewRmapRequest("POST", apiUrl, bytes.NewBuffer(jsonData))
+	req, err := api.NewRmapRequest("POST", apiUrl, bytes.NewBuffer(jsonData))
 	req.Header.Add("Content-Type", "application/json")
-	httputils.AddBearerToken(req)
+	api.AddBearerToken(req)
 	response, err := client.Do(req)
 	if err != nil {
 		return err
@@ -128,7 +127,7 @@ func Login() error {
 }
 
 func Logout() error {
-	if _, err := httputils.ReadSessionToken(); err != nil {
+	if _, err := api.ReadSessionToken(); err != nil {
 		return errors.New("There is no active user session")
 	}
 
@@ -139,12 +138,12 @@ func Logout() error {
 	var apiUrl string = config.ApiUrl + "/users/logout"
 
 	client := &http.Client{}
-	req, err := httputils.NewRmapRequest("POST", apiUrl, nil)
+	req, err := api.NewRmapRequest("POST", apiUrl, nil)
 	if err != nil {
 		return err
 	}
 
-	if err = httputils.AddBearerToken(req); err != nil {
+	if err = api.AddBearerToken(req); err != nil {
 		return err
 	}
 
@@ -159,7 +158,7 @@ func Logout() error {
 
 	defer response.Body.Close()
 
-	configPath, err := httputils.GetSessionTokenPath()
+	configPath, err := api.GetSessionTokenPath()
 	if _, err := os.Stat(configPath); err == nil {
 		err = os.Remove(configPath)
 		if err != nil {

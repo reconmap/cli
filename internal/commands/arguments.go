@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/reconmap/cli/internal/api"
-	"github.com/reconmap/cli/internal/configuration"
+	"github.com/reconmap/shared-lib/pkg/api"
+	"github.com/reconmap/shared-lib/pkg/configuration"
 	"github.com/rodaine/table"
 	"github.com/urfave/cli/v2"
 )

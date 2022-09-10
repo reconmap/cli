@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -9,34 +8,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/reconmap/cli/internal/api"
 	"github.com/reconmap/cli/internal/terminal"
+	"github.com/reconmap/shared-lib/pkg/api"
+	"github.com/reconmap/shared-lib/pkg/io"
 )
-
-// replace with https://blog.kowalczyk.info/article/wOYk/advanced-command-execution-in-go-with-osexec.html
-
-func copyAndCapture(w io.Writer, r io.Reader) ([]byte, error) {
-	var out []byte
-	buf := make([]byte, 1024, 1024)
-	for {
-		n, err := r.Read(buf[:])
-		if n > 0 {
-			d := buf[:n]
-			out = append(out, d...)
-			_, err := w.Write(d)
-			if err != nil {
-				return out, err
-			}
-		}
-		if err != nil {
-			// Read returns io.EOF at the end of file, which is not an error for us
-			if err == io.EOF {
-				err = nil
-			}
-			return out, err
-		}
-	}
-}
 
 func RunCommand(command *api.Command, vars []string) error {
 	var err error
@@ -56,11 +31,11 @@ func RunCommand(command *api.Command, vars []string) error {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		go func() {
-			stdout, errStdout = copyAndCapture(os.Stdout, stdoutIn)
+			stdout, errStdout = io.CopyAndCapture(os.Stdout, stdoutIn)
 			wg.Done()
 		}()
 
-		stderr, errStderr = copyAndCapture(os.Stderr, stderrIn)
+		stderr, errStderr = io.CopyAndCapture(os.Stderr, stderrIn)
 
 		wg.Wait()
 
